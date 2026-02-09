@@ -1,10 +1,14 @@
-from examples.two_dof_fk import TwoDOFRobot
-import funrobo_kinematics.core.utils as ut
-
 from typing import List, Sequence
 
 import pytest
 import yaml
+
+import funrobo_kinematics.core.utils as ut
+
+# Import your robot model script
+from examples.two_dof_fk import TwoDOFRobot
+
+
 
 # -----------------------------------------------------------------------------
 # Test configuration
@@ -14,6 +18,14 @@ import yaml
 robot_model = TwoDOFRobot()
 test_file = "tests/data/two_dof_fk_test_data.yaml"
 
+# robot_model = FiveDOFRobot()
+# test_file = "tests/data/five_dof_fk_test_data.yaml"
+
+# robot_model = KinovaRobot()
+# test_file = "tests/data/kinova_fk_test_data.yaml"
+
+
+# -----------------------------------------------------------------------------
 
 joint_values_list = [ut.sample_valid_joints(robot_model) for _ in range(100)]
 ee_list = []

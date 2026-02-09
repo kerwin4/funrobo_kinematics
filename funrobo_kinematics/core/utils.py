@@ -77,6 +77,84 @@ class Controls:
     vy: float = 0.0
 
 
+@dataclass
+class GamepadCmds:
+    """
+    Gamepad command container.
+
+    This dataclass groups all command signals coming from a gamepad or joystick
+    interface. It is intended as an intermediate representation between raw
+    gamepad inputs (axes, buttons) and higher-level robot control logic.
+
+    Commands are separated into:
+    - Base motion commands (mobile base velocities)
+    - Arm Cartesian motion commands
+    - Arm joint and end-effector commands
+    - Utility and mode-selection buttons
+
+    All fields are typically integers coming directly from the gamepad
+    (e.g., axis values or button states) and are expected to be scaled,
+    filtered, or mapped before being sent to actuators.
+
+    Attributes:
+        base_vx: Base x-direction velocity command (e.g., forward/backward).
+        base_vy: Base y-direction velocity command (e.g., left/right).
+        base_w: Base angular velocity command (yaw/turn rate).
+
+        arm_vx: Arm Cartesian x-direction velocity command.
+        arm_vy: Arm Cartesian y-direction velocity command.
+        arm_vz: Arm Cartesian z-direction velocity command.
+
+        arm_j1: Joint 1 command (e.g., shoulder rotation).
+        arm_j2: Joint 2 command.
+        arm_j3: Joint 3 command.
+        arm_j4: Joint 4 command.
+        arm_j5: Joint 5 command.
+
+        arm_ee: End-effector command (e.g., gripper open/close).
+        arm_home: Arm homing command (return to home pose).
+
+        utility_btn: General-purpose or mode-selection button.
+    """
+    base_vx: int = 0
+    base_vy: int = 0
+    base_w: int = 0
+    arm_vx: int = 0
+    arm_vy: int = 0
+    arm_vz: int = 0
+    arm_j1: int = 0
+    arm_j2: int = 0
+    arm_j3: int = 0
+    arm_j4: int = 0
+    arm_j5: int = 0
+    arm_ee: int = 0
+    arm_home: int = 0
+    utility_btn: int = 0
+
+
+
+def print_dataclass(obj):
+    """
+    Pretty-print the fields and values of a dataclass instance.
+
+    This utility function prints all fields of a dataclass in a readable,
+    labeled format. It is intended for quick debugging, logging, and
+    instructional use (e.g., inspecting robot state or control inputs).
+
+    Numerical values are rounded to three decimal places for readability.
+
+    Args:
+        obj: A dataclass instance whose fields will be printed.
+
+    Raises:
+        AttributeError: If the provided object is not a dataclass.
+    """
+    print("------------------------------------")
+    for field in obj.__dataclass_fields__:
+        print(f"{field}: {round(getattr(obj, field), 3)}")
+    print("------------------------------------ \n")
+
+
 class EndEffector:
     """
     Minimal end-effector pose container.
@@ -149,7 +227,10 @@ def rotm_to_euler(R: np.ndarray) -> tuple:
 
 def dh_to_matrix(dh_params: list) -> np.ndarray:
     """
-    Convert Denavit–Hartenberg (DH) parameters to a homogeneous transform.
+    Convert Denavit–Hartenberg (DH) parameters to a homogeneous transform using the classic
+    DH convention.
+
+    Reference: https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters
 
     Args:
         dh_params: DH parameters [theta, d, a, alpha], where:

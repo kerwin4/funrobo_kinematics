@@ -3,5 +3,5 @@ __pycache__/
 solutions/
 tests/solutions/
 .pytest_cache
-assignments/
+# assignments/
 TODO.md
