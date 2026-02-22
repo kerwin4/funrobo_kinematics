@@ -518,6 +518,7 @@ class KinovaRobotTemplate(BaseRobot):
             [-np.pi * 2, np.pi * 2],
             [-np.pi * 2, np.pi * 2],
             [-np.pi * 2, np.pi * 2],
+            [-np.pi * 2, np.pi * 2],
         ]
         
         self.ee = ut.EndEffector()
