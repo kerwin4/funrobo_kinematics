@@ -491,7 +491,14 @@ class KinovaRobotTemplate(BaseRobot):
         super().__init__()
 
         # Link lengths
-        self.l1, self.l2, self.l3, self.l4, self.l5, self.l6, self.l7 = 0.156, 0.128, 0.410, 0.208, 0.105, 0.105, 0.0615
+        scale = 0.6
+        self.l1 = 0.156 * scale
+        self.l2 = 0.128 * scale
+        self.l3 = 0.410 * scale
+        self.l4 = 0.208 * scale
+        self.l5 = 0.105 * scale
+        self.l6 = 0.105 * scale
+        self.l7 = 0.0615 * scale
         
         self.joint_values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         
