@@ -31,10 +31,11 @@ This assignment will count towards your **final course grade**. It is a team-bas
 ## What to Submit
 
 A **PDF submission** with the following:
-- Derivation of the analytical IK equations for the 5DOF robot platform (show your working)
+- Derivation of the analytical IK equations for the 5DOF robot and 6DOF Kinova platforms (show your working)
 - Description of your process for computing the jacobian and inverse jacobian matrices for use in the numerical IK solver (similar to Mini-project 1)
 - Code showing all the functions you implemented
-- Link to a screenshot videos showing your verification using the viz tool for both analytical and numerical IK solvers
+- Link to a screenshot videos showing your verification using the viz tool for both analytical and numerical IK solvers for the 5DOF arm
+- Link to a screenshot videos showing your verification using the viz tool for the analytical IK solver for the 6DOF Kinova arm
 - Report on the results and your observations from comparing your analytical and numerical IK solvers
 - Link to a video showing physical robot tracing out the given shapes
 - Link to a video showing physical robot tracing out your custom WORD
