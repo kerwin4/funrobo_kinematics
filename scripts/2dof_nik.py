@@ -61,6 +61,33 @@ class TwoDOFRobot(TwoDOFRobotTemplate):
         new_joint_values = [th1, th2]
         return new_joint_values
 
+    def jacobian(self, joint_values: list):
+        """
+        Returns the Jacobian matrix for the robot. 
+
+        Args:
+            joint_values (list): The joint angles for the robot.
+
+        Returns:
+            np.ndarray: The Jacobian matrix (2x2).
+        """
+        
+        return np.array([
+            [-self.l1 * sin(joint_values[0]) - self.l2 * sin(joint_values[0] + joint_values[1]), 
+             -self.l2 * sin(joint_values[0] + joint_values[1])],
+            [self.l1 * cos(joint_values[0]) + self.l2 * cos(joint_values[0] + joint_values[1]), 
+             self.l2 * cos(joint_values[0] + joint_values[1])]
+        ])
+    
+
+    def inverse_jacobian(self, joint_values: list):
+        """
+        Returns the inverse of the Jacobian matrix.
+
+        Returns:
+            np.ndarray: The inverse Jacobian matrix.
+        """
+        return np.linalg.pinv(self.jacobian(joint_values))
 
 if __name__ == "__main__":
     model = TwoDOFRobot()
