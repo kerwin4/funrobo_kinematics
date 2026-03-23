@@ -6,6 +6,9 @@ from funrobo_kinematics.core.arm_models import (
     TwoDOFRobotTemplate, ScaraRobotTemplate, FiveDOFRobotTemplate
 )
 
+def wrap_to_pi(angle):
+    """Wrap an angle in radians to [-pi, pi]."""
+    return (angle + np.pi) % (2 * np.pi) - np.pi
 
 class TwoDOFRobot(TwoDOFRobotTemplate):
     def __init__(self):
@@ -44,23 +47,43 @@ class TwoDOFRobot(TwoDOFRobotTemplate):
         ee.rotx, ee.roty, ee.rotz = rpy[0], rpy[1], rpy[2]
 
         return ee, Hlist
+
+    def calc_numerical_ik(self, ee, joint_values, tol=0.002, ilimit=300):
+        """
+        Numerical IK with angles wrapped to [-pi, pi].
+
+        Args:
+            ee (EndEffector): Desired end-effector pose.
+            joint_values (list[float]): Initial guess for joint angles (radians).
+            tol (float, optional): Convergence tolerance. Defaults to 0.01.
+            ilimit (int, optional): Maximum number of iterations. Defaults to 200.
+
+        Returns:
+            list[float]: Estimated joint angles in radians, wrapped to [-pi, pi].
+        """
+        x_target, y_target = ee.x, ee.y
+        new_joint_values = np.array(joint_values, dtype=float)
+
+        for _ in range(10):  # outer retry loop
+            for _ in range(ilimit):
+                current_ee, _ = self.calc_forward_kinematics(new_joint_values)
+                error = np.array([x_target, y_target]) - np.array([current_ee.x, current_ee.y])
+
+                if np.linalg.norm(error) <= tol:
+                    # Wrap angles before returning
+                    return [wrap_to_pi(angle) for angle in new_joint_values]
+
+                # IK update
+                new_joint_values += self.inverse_jacobian(new_joint_values) @ error
+                # Wrap after update
+                new_joint_values = np.array([wrap_to_pi(angle) for angle in new_joint_values])
+
+            # If still not converged, restart from a new random valid joint config
+            new_joint_values = np.array(ut.sample_valid_joints(self), dtype=float)
+
+        # Return the last attempt wrapped to [-pi, pi]
+        return [float(wrap_to_pi(angle)) for angle in new_joint_values]
     
-    def calc_inverse_kinematics(self, ee, joint_values, soln = 0):
-        l1, l2, = self.l1, self.l2
-        x = ee.x
-        y = ee.y
-
-        beta = np.arccos((l1**2 + l2**2 - (sqrt(x**2+y**2)**2))/(2*l1*l2))
-        if soln == 0:
-            th2 = pi-beta
-        if soln == 1:
-            th2 = -(pi-beta)
-        alpha = atan2(l2*sin(th2),l1+l2*cos(th2))
-        gamma = atan2(y,x)
-        th1 = gamma-alpha
-        new_joint_values = [th1, th2]
-        return new_joint_values
-
     def jacobian(self, joint_values: list):
         """
         Returns the Jacobian matrix for the robot. 
